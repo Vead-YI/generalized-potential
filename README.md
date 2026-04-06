@@ -58,9 +58,9 @@ U(R, E) = U_geom(R) - E · M(R) - 1/2 α(R) ||E||^2
 with
 
 ```text
-U_geom(R) = Σ_{i<j} [ 1/2 k (d_ij - l0)^2 + A exp(-d_ij^2 / (2σ^2)) ]
-M(R)      = Σ_i q_i r_i
-α(R)      = α0 + α1 Σ_{i<j} exp(-d_ij^2 / (2ρ^2))
+- U_geom(R) = Σ_{i<j} [ 1/2 k (d_ij - l0)^2 + A exp(-d_ij^2 / (2σ^2)) ]
+- M(R)      = Σ_i q_i r_i
+- α(R)      = α0 + α1 Σ_{i<j} exp(-d_ij^2 / (2ρ^2))
 ```
 
 where:
