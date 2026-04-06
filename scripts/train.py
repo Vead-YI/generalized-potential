@@ -109,12 +109,29 @@ def main() -> None:
         lr=float(config["train"]["lr"]),
         weight_decay=float(config["train"]["weight_decay"]),
     )
+    checkpoint_dir = ROOT / "outputs" / "checkpoints"
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    best_checkpoint_path = checkpoint_dir / "best.pt"
+    last_checkpoint_path = checkpoint_dir / "last.pt"
 
     num_epochs = args.epochs if args.epochs is not None else int(config["train"]["epochs"])
+    best_val_loss = float("inf")
 
     for epoch in range(1, num_epochs + 1):
         train_metrics = run_epoch(model, train_loader, optimizer, config)
         val_metrics = run_epoch(model, val_loader, None, config)
+        checkpoint = {
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "config": config,
+            "train_metrics": train_metrics,
+            "val_metrics": val_metrics,
+        }
+        torch.save(checkpoint, last_checkpoint_path)
+        if val_metrics["loss"] < best_val_loss:
+            best_val_loss = val_metrics["loss"]
+            torch.save(checkpoint, best_checkpoint_path)
         print(
             f"epoch={epoch:03d} "
             f"train_loss={train_metrics['loss']:.6f} "
@@ -123,6 +140,9 @@ def main() -> None:
             f"val_F={val_metrics['force_mse']:.6f} "
             f"val_P={val_metrics['response_mse']:.6f}"
         )
+
+    print(f"saved best checkpoint to {best_checkpoint_path}")
+    print(f"saved last checkpoint to {last_checkpoint_path}")
 
 
 if __name__ == "__main__":
